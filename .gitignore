@@ -30,3 +30,8 @@ __pycache__/
 .venv/
 venv/
 env/
+
+# Reference files (downloaded from websites, may contain API keys)
+ThamKhao/Đại học Đà Nẵng_files/app.1a12b1f0.js.download
+
+
