@@ -96,7 +96,7 @@ export default function App() {
       {/* SIDEBAR */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}` }>
         <div className="sidebar-header">
-          <h2>🎭 Animations</h2>
+          <h2>DS Animations</h2>
           <span className="badge">{animNames.length}</span>
         </div>
         <div className="animation-list">
@@ -139,12 +139,12 @@ export default function App() {
               shadow-mapSize-width={1024}
               shadow-mapSize-height={1024}
             />
-            <pointLight position={[-5, 5, -5]} intensity={0.3} color="#a78bfa" />
-            <pointLight position={[5, 2, 5]} intensity={0.2} color="#60a5fa" />
+            <pointLight position={[-5, 5, -5]} intensity={0.3} color="#38bdf8" />
+            <pointLight position={[5, 2, 5]} intensity={0.2} color="#7dd3fc" />
             
             {/* Environment */}
             <Environment preset="sunset" background={false} />
-            <color attach="background" args={['#1a1625']} />
+            <color attach="background" args={['#071223']} />
             
             {/* Model */}
             <Avatar action={currentAction} onNamesReady={handleNamesReady} />
