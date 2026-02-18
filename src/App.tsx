@@ -70,6 +70,7 @@ function Avatar({
 export default function App() {
   const [currentAction, setAction] = useState("");
   const [animNames, setAnimNames] = useState<string[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleNamesReady = (names: string[]) => {
     setAnimNames(names);
@@ -78,8 +79,22 @@ export default function App() {
 
   return (
     <div className="app-container">
+      {/* NÚT HAMBURGER - chỉ hiện trên mobile */}
+      <button
+        className="sidebar-toggle"
+        onClick={() => setSidebarOpen((o) => !o)}
+        aria-label="Toggle animations"
+      >
+        {sidebarOpen ? "✕" : "☰"}
+      </button>
+
+      {/* OVERLAY - đóng sidebar khi tap ngoài */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* SIDEBAR */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}` }>
         <div className="sidebar-header">
           <h2>🎭 Animations</h2>
           <span className="badge">{animNames.length}</span>
@@ -88,7 +103,7 @@ export default function App() {
           {animNames.map((name) => (
             <button
               key={name}
-              onClick={() => setAction(name)}
+              onClick={() => { setAction(name); setSidebarOpen(false); }}
               className={`anim-btn ${currentAction === name ? "active" : ""}`}
             >
               <span className="anim-icon">▶</span>

@@ -168,14 +168,82 @@ blender --background --python scripts/fix_materials_from_vrm.py
 ## Hướng phát triển
 
 ### Tích hợp AI Chatbot / RAG
-Avatar phản ứng theo câu hỏi người dùng — chat input đã có sẵn trong UI:
+
+Chat input đã có sẵn trong UI. Để avatar phản ứng theo câu trả lời từ RAG, luồng như sau:
 
 ```
-User input → RAG API → { answer, emotion, animation_name }
-           → Avatar chạy animation tương ứng + TTS đọc câu trả lời
+User nhập → Gọi RAG API → Nhận { answer, emotion } → Map emotion → setAction(animation)
 ```
 
-Map ví dụ: `greeting → Thankful`, `thinking → HeadNod`, `idle → Idle`
+**Bước 1 — Map emotion/intent → animation name**
+
+```ts
+// src/animationMap.ts
+export const EMOTION_TO_ANIMATION: Record<string, string> = {
+  greeting:   "Thankful",   // chào hỏi, cảm ơn
+  thinking:   "HeadNod",    // đang xử lý / xác nhận
+  explaining: "FaxMachine", // đang trình bày thông tin
+  walking:    "Catwalk",    // di chuyển / chuyển chủ đề
+  idle:       "Idle",       // chờ đợi
+  sitting:    "StandingUp", // bắt đầu / kết thúc session
+  texting:    "Texting",    // đang gõ / loading
+};
+
+export function getAnimation(emotion: string): string {
+  return EMOTION_TO_ANIMATION[emotion] ?? "Idle";
+}
+```
+
+**Bước 2 — RAG API trả về emotion**
+
+Backend (FastAPI / LangChain) cần trả về thêm field `emotion`:
+
+```python
+# backend/main.py (ví dụ FastAPI)
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    answer = rag_chain.invoke(req.message)
+
+    # Đơn giản: rule-based emotion detection
+    emotion = "idle"
+    if any(w in req.message for w in ["cảm ơn", "thank", "xin chào"]):
+        emotion = "greeting"
+    elif any(w in answer for w in ["vì vậy", "do đó", "như vậy"]):
+        emotion = "explaining"
+    elif "?" in req.message:
+        emotion = "thinking"
+
+    return { "answer": answer, "emotion": emotion }
+```
+
+**Bước 3 — Kết nối trong App.tsx**
+
+```tsx
+// Thêm state animation vào chat handler
+const handleSend = async (message: string) => {
+  setAction("Texting"); // loading animation
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ message }),
+  });
+  const { answer, emotion } = await res.json();
+  setAction(getAnimation(emotion));  // avatar phản ứng
+  speak(answer);                     // TTS đọc câu trả lời
+};
+```
+
+**Bước 4 (tuỳ chọn) — Text-to-Speech đồng bộ**
+
+```ts
+function speak(text: string) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "vi-VN";
+  utterance.onend = () => setAction("Idle"); // về idle sau khi nói xong
+  speechSynthesis.speak(utterance);
+}
+```
+
+Không phức tạp — phần tốn thời gian nhất là xây backend RAG, còn phần animation chỉ là `setAction(animName)`. Toàn bộ UI + avatar đã sẵn sàng.
 
 ### Lip Sync & Facial Expressions
 - VRM hỗ trợ BlendShapes (biểu cảm khuôn mặt)
