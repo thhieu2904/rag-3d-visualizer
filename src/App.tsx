@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, useAnimations, Center } from "@react-three/drei";
+import { useGLTF, useAnimations, OrbitControls, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
+import "./App.css";
 
 // --- NHÂN VẬT ---
 function Avatar({
@@ -16,6 +17,25 @@ function Avatar({
 
   const { scene, animations } = useGLTF("/models/character.glb");
   const { actions, names } = useAnimations(animations, group);
+
+  // Fix materials nếu model không có texture
+  useEffect(() => {
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (mesh.material) {
+          const material = mesh.material as THREE.MeshStandardMaterial;
+          // Nếu màu trắng thuần, đổi sang màu da tự nhiên
+          if (material.color && material.color.getHex() === 0xffffff) {
+            material.color.setHex(0xffdbac); // Màu da
+          }
+          material.roughness = 0.8;
+          material.metalness = 0.2;
+          material.needsUpdate = true;
+        }
+      }
+    });
+  }, [scene]);
 
   // Báo tên animations — CHỈ 1 LẦN
   useEffect(() => {
@@ -40,8 +60,8 @@ function Avatar({
   }, [action, actions, names]);
 
   return (
-    <group ref={group} dispose={null}>
-      <primitive object={scene} />
+    <group ref={group} dispose={null} position={[0, 0.5, 0]}>
+      <primitive object={scene} scale={0.8} />
     </group>
   );
 }
@@ -57,131 +77,99 @@ export default function App() {
   };
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        background: "#1a1a2e",
-        display: "flex",
-      }}
-    >
+    <div className="app-container">
       {/* SIDEBAR */}
-      <div
-        style={{
-          width: "220px",
-          padding: "20px",
-          background: "rgba(255,255,255,0.05)",
-          borderRight: "1px solid rgba(255,255,255,0.1)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}
-      >
-        <h2
-          style={{ color: "white", marginBottom: "15px", fontSize: "1.1rem" }}
-        >
-          🎭 Animation
-        </h2>
-        {animNames.map((name) => (
-          <button
-            key={name}
-            onClick={() => setAction(name)}
-            style={{
-              padding: "10px 14px",
-              background:
-                currentAction === name
-                  ? "linear-gradient(135deg, #667eea, #764ba2)"
-                  : "rgba(255,255,255,0.08)",
-              color: "white",
-              border:
-                currentAction === name
-                  ? "none"
-                  : "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "10px",
-              cursor: "pointer",
-              textAlign: "left",
-              fontSize: "0.9rem",
-              transition: "all 0.2s",
-            }}
-          >
-            {name}
-          </button>
-        ))}
-        {animNames.length === 0 && (
-          <p style={{ color: "#666", fontSize: "0.8rem" }}>Đang tải...</p>
-        )}
-      </div>
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <h2>🎭 Animations</h2>
+          <span className="badge">{animNames.length}</span>
+        </div>
+        <div className="animation-list">
+          {animNames.map((name) => (
+            <button
+              key={name}
+              onClick={() => setAction(name)}
+              className={`anim-btn ${currentAction === name ? "active" : ""}`}
+            >
+              <span className="anim-icon">▶</span>
+              <span className="anim-name">{name}</span>
+            </button>
+          ))}
+          {animNames.length === 0 && (
+            <p className="loading-text">⏳ Đang tải animations...</p>
+          )}
+        </div>
+      </aside>
 
       {/* KHUNG 3D */}
-      <div style={{ flex: 1, position: "relative" }}>
-        <Suspense
-          fallback={
-            <div
-              style={{
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-              }}
-            >
-              ⏳ Đang tải nhân vật...
-            </div>
-          }
-        >
-          <Canvas camera={{ position: [0, 1, 3], fov: 35 }}>
-            <ambientLight intensity={0.8} />
-            <directionalLight position={[5, 5, 5]} intensity={1} />
-            <Center>
-              <Avatar action={currentAction} onNamesReady={handleNamesReady} />
-            </Center>
+      <main className="canvas-container">
+        <Suspense fallback={<div className="loading-screen">⏳ Đang tải nhân vật 3D...</div>}>
+          <Canvas
+            camera={{ position: [0, 1.2, 3], fov: 40 }}
+            shadows
+            gl={{ 
+              antialias: true, 
+              alpha: false,
+              toneMapping: THREE.ACESFilmicToneMapping,
+              toneMappingExposure: 1.2
+            }}
+            dpr={[1, 2]}
+          >
+            {/* Lighting */}
+            <ambientLight intensity={0.5} />
+            <directionalLight
+              position={[5, 8, 5]}
+              intensity={0.8}
+              castShadow
+              shadow-mapSize-width={1024}
+              shadow-mapSize-height={1024}
+            />
+            <pointLight position={[-5, 5, -5]} intensity={0.3} color="#a78bfa" />
+            <pointLight position={[5, 2, 5]} intensity={0.2} color="#60a5fa" />
+            
+            {/* Environment */}
+            <Environment preset="sunset" background={false} />
+            <color attach="background" args={['#1a1625']} />
+            
+            {/* Model */}
+            <Avatar action={currentAction} onNamesReady={handleNamesReady} />
+            
+            {/* Ground Shadow */}
+            <ContactShadows
+              position={[0, -1, 0]}
+              opacity={0.4}
+              scale={10}
+              blur={2}
+              far={4}
+            />
+            
+            {/* Controls */}
+            <OrbitControls
+              enablePan={false}
+              enableZoom={true}
+              minDistance={2}
+              maxDistance={8}
+              maxPolarAngle={Math.PI / 2}
+              target={[0, 1, 0]}
+            />
           </Canvas>
         </Suspense>
 
-        {/* CHAT */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "55%",
-            background: "rgba(0,0,0,0.5)",
-            padding: "12px 20px",
-            borderRadius: "30px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.1)",
-          }}
-        >
+        {/* CHAT INPUT */}
+        <div className="chat-container">
           <input
             type="text"
-            placeholder="Nhập tin nhắn..."
-            style={{
-              flex: 1,
-              background: "transparent",
-              border: "none",
-              color: "white",
-              outline: "none",
-              fontSize: "0.95rem",
-            }}
+            placeholder="💬 Nhập tin nhắn..."
+            className="chat-input"
           />
-          <button
-            style={{
-              background: "linear-gradient(135deg, #667eea, #764ba2)",
-              border: "none",
-              color: "white",
-              padding: "8px 20px",
-              borderRadius: "20px",
-              cursor: "pointer",
-            }}
-          >
-            Gửi
-          </button>
+          <button className="chat-btn">Gửi</button>
         </div>
-      </div>
+
+        {/* INFO BADGE */}
+        <div className="info-badge">
+          <span>🖱️ Click &amp; Drag để xoay • Scroll để zoom</span>
+        </div>
+      </main>
     </div>
   );
 }
