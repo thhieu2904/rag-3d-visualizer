@@ -1,192 +1,213 @@
-# 3D Character Viewer with Animations
+# 🎨 3D Character Viewer with Animations
 
-Dự án demo xem nhân vật 3D với animations realtime trên web, xây dựng trên **React + Three.js**. Nhân vật được tạo từ VRoid Studio, xử lý qua Blender + Mixamo, và hiển thị với đầy đủ materials/textures + nhiều animations.
+> Ứng dụng xem nhân vật 3D tương tác cao cấp với animations realtime, kết hợp **RAG AI Chatbot** + **Text-to-Speech**
+
+**🔗 [Live Demo](https://rag-3d-visualizer.vercel.app/)** | **💻 [GitHub](https://github.com/thhieu2904/rag-3d-visualizer)**
 
 ---
 
-## Chạy nhanh
+## 📸 Demo
+
+![3D Character Viewer Demo](./screenshot-demo.png)
+
+Nhân vật 3D tương tác với 7+ animations, hỗ trợ chatbot AI tích hợp RAG cho phản hồi tự động.
+
+---
+
+## ✨ Tính năng
+
+- ✅ **Nhân vật 3D Realtime** — Render đầy đủ materials, textures, lighting
+- ✅ **7+ Animations** — Idle, walking, greeting, texting, v.v.
+- ✅ **Interactive Controls** — Click & drag để xoay, scroll để zoom, click animation
+- ✅ **Chat Integration** — Chatbot AI (RAG), avatar phản ứng theo cảm xúc
+- ✅ **Text-to-Speech** — Đọc câu trả lời giọng nói tiếng Việt
+- ✅ **Fully Customizable** — Thêm animations mới, thay model dễ dàng
+
+---
+
+## 🚀 Chạy nhanh
 
 ```bash
+# 1. Cài đặt dependencies
 npm install
+
+# 2. Dev server
 npm run dev
-# Mở http://localhost:5173
+
+# 3. Mở trình duyệt
+open http://localhost:5173
 ```
 
-**Điều khiển:**
-- **Click & Drag** để xoay nhân vật
-- **Scroll** để zoom in/out
-- **Sidebar trái** để chọn animation
+### Điều khiển
+
+| Thao tác | Chức năng |
+|---------|----------|
+| 🖱️ **Click & Drag** | Xoay nhân vật |
+| 🔄 **Scroll** | Zoom in/out |
+| 🎬 **Sidebar** | Chọn animation |
+| 💬 **Chat Input** | Nhắn tin chatbot |
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-| Layer | Công nghệ |
-|---|---|
-| UI Framework | React 19 + TypeScript |
-| Build Tool | Vite 7 |
-| 3D Rendering | Three.js + @react-three/fiber |
-| 3D Helpers | @react-three/drei (OrbitControls, GLTF, Animations) |
-| 3D Pipeline | VRoid Studio → Blender 4.2 → Mixamo → GLB |
+| Lớp | Công nghệ |
+|------|-----------|
+| 🎨 **Frontend** | React 19 + TypeScript + Vite 7 |
+| 🎬 **3D Rendering** | Three.js + @react-three/fiber |
+| 🎯 **3D Helpers** | @react-three/drei (OrbitControls, GLTF, Animations) |
+| 📦 **Pipeline** | VRoid Studio → Blender 4.2 → Mixamo → GLB |
+| 🤖 **RAG (Optional)** | FastAPI / LangChain + Chroma Vector DB |
+| 🔊 **TTS (Optional)** | Web Speech API (browser native) |
 
 ---
 
-## Cấu trúc thư mục
+## 📁 Cấu trúc thư mục
 
 ```
 3D_Blender/
-├── src/
-│   ├── App.tsx              # Component chính: Canvas 3D + Sidebar animations + Chat UI
-│   ├── App.css              # Styling dark theme, sidebar, chat input
-│   ├── main.tsx             # Entry point React
-│   └── index.css            # Global styles
 │
-├── public/
-│   └── models/
-│       └── character.glb    # Model 3D cuối cùng (materials + 7 animations)
+├── 📄 src/                              # React source
+│   ├── App.tsx                          # Main component
+│   ├── App.css                          # Styling
+│   ├── main.tsx                         # Entry point
+│   └── index.css                        # Global styles
 │
-├── scripts/                 # Blender Python scripts — xem scripts/README.md
-│   ├── convert_to_glb.py    # Gộp FBX base + animation FBX → character.glb
-│   ├── fix_materials_from_vrm.py  # Transfer materials từ VRM vào GLB
-│   └── README.md
+├── 📦 public/models/
+│   └── character.glb                    # Final 3D model
 │
-├── assets/
-│   └── pipeline/            # Raw assets pipeline — xem assets/pipeline/README.md
-│       ├── AIC_Female_v1.vrm      # Model gốc VRoid (nguồn materials MToon)
-│       ├── upload_Mixamo.fbx      # FBX dùng để upload lên Mixamo
-│       ├── file_new.fbx           # FBX tải từ Mixamo (xương chuẩn + bind pose)
-│       ├── Catwalk Walk Stop Twist R.fbx
-│       ├── Using A Fax Machine.fbx
-│       ├── Lengthy Head Nod.fbx
-│       ├── Standing W_Briefcase Idle.fbx
-│       ├── Standing Up.fbx
-│       ├── Texting While Standing.fbx
-│       ├── Thankful.fbx
-│       └── README.md
+├── 🔧 scripts/                          # Blender automation
+│   ├── convert_to_glb.py                # Merge FBX + animations
+│   ├── fix_materials_from_vrm.py        # Restore materials
+│   └── README.md                        # Script docs
 │
-├── ThamKhao/                # Tài liệu tham khảo
+├── 📂 assets/pipeline/                  # Raw assets
+│   ├── AIC_Female_v1.vrm                # VRoid model
+│   ├── upload_Mixamo.fbx                # Base FBX
+│   ├── file_new.fbx                     # Mixamo skeleton
+│   └── *.fbx                            # Animation FBXs
+│
+├── 📚 ThamKhao/                         # References
 ├── vite.config.ts
 ├── tsconfig.json
-└── package.json
+├── package.json
+└── README.md
 ```
 
 ---
 
-## Pipeline tạo model 3D
+## 🎬 3D Pipeline
 
-Quy trình đầy đủ từ thiết kế nhân vật đến hiển thị web:
+Quy trình 6 bước: Design → Web
 
 ```
-[1] VRoid Studio
-    └─> Tạo nhân vật, export AIC_Female_v1.vrm
-
-[2] Blender 4.2
-    └─> Import VRM → Export upload_Mixamo.fbx
-        (FBX chuẩn T-pose để Mixamo nhận diện xương)
-
-[3] Mixamo (mixamo.com)
-    ├─> Upload upload_Mixamo.fbx → Auto-rig
-    └─> Tải file_new.fbx (T-pose + xương Mixamo chuẩn)
-    └─> Tải từng animation FBX (Without Skin) → lưu vào assets/pipeline/
-
-[4] scripts/convert_to_glb.py  ← chạy 1 lần
-    └─> Import assets/pipeline/file_new.fbx làm base character
-    └─> Import từng FBX animation, lấy Action, push vào NLA tracks
-    └─> Export → public/models/character.glb  (có animations nhưng materials chưa đúng)
-
-[5] scripts/fix_materials_from_vrm.py  ← chạy sau bước 4
-    └─> Import character.glb + assets/pipeline/AIC_Female_v1.vrm
-    └─> Transfer 18 material slots từ VRM → GLB meshes (Body, Face, Hair)
-    └─> Export lại → public/models/character.glb  ✅ đầy đủ materials + animations
-
-[6] React App
-    └─> Load character.glb qua useGLTF
-    └─> useAnimations → 7 NLA tracks hiện trong sidebar
+┌──────────────┐
+│ VRoid Studio │  → Tạo nhân vật, export VRM
+└───────┬──────┘
+        ▼
+┌──────────────┐
+│  Blender     │  → Import VRM, export T-pose FBX
+└───────┬──────┘
+        ▼
+┌──────────────┐
+│   Mixamo     │  → Auto-rig, download 7 animations
+└───────┬──────┘
+        ▼
+┌──────────────────────────────────────┐
+│ convert_to_glb.py (Step 1)           │  → Merge base + animations
+│ → character.glb (no materials yet)   │
+└────────────┬─────────────────────────┘
+             ▼
+┌──────────────────────────────────────┐
+│ fix_materials_from_vrm.py (Step 2)   │  → Restore materials from VRM
+│ → character.glb (complete!)          │
+└────────────┬─────────────────────────┘
+             ▼
+┌──────────────┐
+│  React App   │  → Load GLB + Play animations
+└──────────────┘
 ```
+
+**Tại sao phức tạp?** VRM dùng MToon shader (không tương thích Mixamo) → phải tách workflow.
 
 ---
 
-## Scripts Blender
+## 🔧 Blender Scripts
 
-### `scripts/convert_to_glb.py` — Gộp animations
+### 1️⃣ `convert_to_glb.py` — Merge Animations
 
-Dùng khi **thêm animation mới** hoặc rebuild model từ đầu.
+Chạy khi thêm animation hoặc rebuild model:
 
 ```bash
 blender --background --python scripts/convert_to_glb.py
 ```
 
-Thêm/bớt animations bằng cách chỉnh dict `ANIMATIONS` trong file:
+**Thêm animation mới:**
+1. Download FBX từ [Mixamo](https://mixamo.com) (**Without Skin**)
+2. Lưu vào `assets/pipeline/MyAnimation.fbx`
+3. Chỉnh `ANIMATIONS` dict trong `convert_to_glb.py`:
+   ```python
+   ANIMATIONS = {
+       "Catwalk Walk Stop Twist R.fbx": "Catwalk",
+       "MyAnimation.fbx": "MyAnimation",  # ← Add this
+   }
+   ```
+4. Chạy lại script
 
-```python
-ANIMATIONS = {
-    "TenFile.fbx": "TenHienThiTrenWeb",
-    ...
-}
-```
+### 2️⃣ `fix_materials_from_vrm.py` — Restore Materials
 
----
-
-### `scripts/fix_materials_from_vrm.py` — Khôi phục materials
-
-Dùng khi model bị **trắng xóa** sau khi qua FBX pipeline. Luôn chạy sau `convert_to_glb.py`.
+Chạy **sau** `convert_to_glb.py`:
 
 ```bash
 blender --background --python scripts/fix_materials_from_vrm.py
 ```
 
----
-
-## Animations có sẵn
-
-| Tên | Mô tả |
-|---|---|
-| `Catwalk` | Đi catwalk, dừng, xoay |
-| `FaxMachine` | Dùng máy fax |
-| `HeadNod` | Gật đầu |
-| `Idle` | Đứng idle cầm cặp |
-| `StandingUp` | Đứng dậy từ ghế |
-| `Texting` | Nhắn tin khi đứng |
-| `Thankful` | Cảm ơn / cúi chào |
+📌 **Luôn chạy theo thứ tự:** Step 1 → Step 2
 
 ---
 
-## Thêm animation mới
+## 🎬 Available Animations
 
-1. Lên [Mixamo](https://mixamo.com), tìm animation, tải FBX (**Without Skin**)
-2. Đặt file vào `assets/pipeline/`
-3. Thêm vào dict `ANIMATIONS` trong `scripts/convert_to_glb.py`
-4. Chạy lại cả 2 scripts:
+| Icon | Name | Description |
+|------|------|-------------|
+| 🚶 | **Catwalk** | Walking with turns |
+| 📠 | **FaxMachine** | Using machine |
+| 🧠 | **HeadNod** | Nodding (thinking/confirm) |
+| 🧍 | **Idle** | Standing idle |
+| ⬆️ | **StandingUp** | Getting up from chair |
+| 📱 | **Texting** | Typing phone |
+| 🙏 | **Thankful** | Thanking/Greeting |
+
+---
+
+## ➕ Thêm Animation Mới (5 bước)
+
+1. **Mixamo** → [mixamo.com](https://mixamo.com) → Tải FBX (Without Skin)
+2. **Save** → `assets/pipeline/MyNewAnim.fbx`
+3. **Edit** → `scripts/convert_to_glb.py` → Thêm vào `ANIMATIONS` dict
+4. **Run Scripts:**
    ```bash
    blender --background --python scripts/convert_to_glb.py
    blender --background --python scripts/fix_materials_from_vrm.py
    ```
-5. Reload trình duyệt — animation mới tự động xuất hiện trong sidebar
+5. **Reload** browser → Animation xuất hiện sidebar! ✨
 
 ---
 
-## Hướng phát triển
+## 🤖 RAG Chatbot + Avatar Reactions
 
-### Tích hợp AI Chatbot / RAG
+### 1️⃣ Emotion → Animation Map
 
-Chat input đã có sẵn trong UI. Để avatar phản ứng theo câu trả lời từ RAG, luồng như sau:
+Create `src/animationMap.ts`:
 
-```
-User nhập → Gọi RAG API → Nhận { answer, emotion } → Map emotion → setAction(animation)
-```
-
-**Bước 1 — Map emotion/intent → animation name**
-
-```ts
-// src/animationMap.ts
+```typescript
 export const EMOTION_TO_ANIMATION: Record<string, string> = {
-  greeting:   "Thankful",   // chào hỏi, cảm ơn
-  thinking:   "HeadNod",    // đang xử lý / xác nhận
-  explaining: "FaxMachine", // đang trình bày thông tin
-  walking:    "Catwalk",    // di chuyển / chuyển chủ đề
-  idle:       "Idle",       // chờ đợi
-  sitting:    "StandingUp", // bắt đầu / kết thúc session
-  texting:    "Texting",    // đang gõ / loading
+  greeting:   "Thankful",       // chào, cảm ơn
+  thinking:   "HeadNod",        // xử lý, xác nhận
+  explaining: "FaxMachine",     // trình bày
+  walking:    "Catwalk",        // di chuyển
+  idle:       "Idle",           // chờ
+  texting:    "Texting",        // loading
 };
 
 export function getAnimation(emotion: string): string {
@@ -194,83 +215,188 @@ export function getAnimation(emotion: string): string {
 }
 ```
 
-**Bước 2 — RAG API trả về emotion**
-
-Backend (FastAPI / LangChain) cần trả về thêm field `emotion`:
+### 2️⃣ Backend Setup (FastAPI)
 
 ```python
-# backend/main.py (ví dụ FastAPI)
-@app.post("/chat")
-async def chat(req: ChatRequest):
-    answer = rag_chain.invoke(req.message)
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-    # Đơn giản: rule-based emotion detection
+app = FastAPI()
+
+class ChatRequest(BaseModel):
+    message: str
+
+@app.post("/api/chat")
+async def chat(req: ChatRequest):
+    # Gọi RAG chain
+    answer = rag_chain.invoke(req.message)
+    
+    # Rule-based emotion detection
     emotion = "idle"
     if any(w in req.message for w in ["cảm ơn", "thank", "xin chào"]):
         emotion = "greeting"
-    elif any(w in answer for w in ["vì vậy", "do đó", "như vậy"]):
+    elif any(w in answer for w in ["vì vậy", "do đó"]):
         emotion = "explaining"
     elif "?" in req.message:
         emotion = "thinking"
-
-    return { "answer": answer, "emotion": emotion }
+    
+    return {"answer": answer, "emotion": emotion}
 ```
 
-**Bước 3 — Kết nối trong App.tsx**
+### 3️⃣ Frontend Connection (App.tsx)
 
-```tsx
-// Thêm state animation vào chat handler
+```typescript
+import { getAnimation } from './animationMap';
+
 const handleSend = async (message: string) => {
-  setAction("Texting"); // loading animation
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    body: JSON.stringify({ message }),
-  });
-  const { answer, emotion } = await res.json();
-  setAction(getAnimation(emotion));  // avatar phản ứng
-  speak(answer);                     // TTS đọc câu trả lời
+  setAction("Texting");  // Loading animation
+  
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    
+    const { answer, emotion } = await res.json();
+    setAction(getAnimation(emotion));  // Avatar reacts!
+    
+    // Optional: Text-to-speech
+    if ('speechSynthesis' in window) {
+      speak(answer);
+    }
+  } catch (error) {
+    console.error(error);
+    setAction("Idle");
+  }
 };
-```
 
-**Bước 4 (tuỳ chọn) — Text-to-Speech đồng bộ**
-
-```ts
 function speak(text: string) {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "vi-VN";
-  utterance.onend = () => setAction("Idle"); // về idle sau khi nói xong
-  speechSynthesis.speak(utterance);
+  utterance.onend = () => setAction("Idle");
+  window.speechSynthesis.speak(utterance);
 }
 ```
 
-Không phức tạp — phần tốn thời gian nhất là xây backend RAG, còn phần animation chỉ là `setAction(animName)`. Toàn bộ UI + avatar đã sẵn sàng.
-
-### Lip Sync & Facial Expressions
-- VRM hỗ trợ BlendShapes (biểu cảm khuôn mặt)
-- Tích hợp [three-vrm](https://github.com/pixiv/three-vrm) thay vì GLTF thuần để khai thác đầy đủ MToon shader + viseme
-
-### Nhiều nhân vật / Environment
-- Load nhiều GLB, chuyển nhân vật qua UI
-- Thay `Environment preset` bằng custom HDRI hoặc background 3D
+**Result:** User chats → Avatar reacts + speaks automatically 🎬
 
 ---
 
-## Yêu cầu
+## 🎯 Future Features
+
+| Feature | Difficulty | Notes |
+|---------|-----------|-------|
+| 💬 **Full RAG Chatbot** | ⭐⭐⭐ | Backend + vector DB |
+| 🎬 **Lip Sync** | ⭐⭐⭐⭐ | Blend shapes + visemes |
+| 😊 **Facial Expressions** | ⭐⭐ | VRM BlendShapes |
+| 👥 **Multi-Character** | ⭐⭐ | Switch models via UI |
+| 🏠 **3D Environment** | ⭐⭐⭐ | HDRI background |
+| 🎵 **Background Music** | ⭐ | Pause during speech |
+| 📊 **Streaming** | ⭐⭐ | SSE/WebSocket |
+
+---
+
+## 📋 Requirements
 
 - **Node.js** 18+
-- **Blender 4.2** — chỉ cần nếu rebuild hoặc thêm animation mới
+- **Blender 4.2+** (chỉ nếu thêm animations)
+- **Python 3.8+** (Blender scripts)
+- **Backend** (FastAPI/Express) — nếu thêm RAG
 
 ---
 
-## Ghi chú kỹ thuật
+## 🚀 Build & Deploy
 
-**Tại sao pipeline VRM → FBX → Mixamo → GLB?**
+### Development
 
-VRM dùng **MToon shader** (toon-style) không được hỗ trợ bởi Mixamo. Mixamo yêu cầu FBX với xương Humanoid chuẩn. Pipeline này:
-1. VRM → FBX: lấy mesh + xương, mất materials
-2. Mixamo: auto-rig + download animations
-3. `fix_materials_from_vrm.py`: ghép lại materials từ VRM gốc vào GLB cuối
+```bash
+npm install
+npm run dev
+# http://localhost:5173
+```
 
-**Tại sao GLB thay vì GLTF?**
+### Production
 
-GLB là binary, gộp textures + mesh + animations vào 1 file → load nhanh hơn, deploy đơn giản.
+```bash
+npm run build
+npm run preview  # Test locally
+```
+
+### Vercel Deployment
+
+```bash
+git push origin main
+# Connect on Vercel dashboard: https://vercel.com/new
+# Auto-deploys on each push
+```
+
+---
+
+## 🐛 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **White model** | Run `fix_materials_from_vrm.py` |
+| **No animations** | Check action names, hard refresh |
+| **Chat 404** | Backend must be running |
+| **Lag/FPS** | Enable compression, reduce mesh complexity |
+| **Blender error** | Update to 4.2+, check Python path |
+
+---
+
+## 📚 Resources
+
+- 🎨 [VRoid Studio](https://vroid.com/)
+- 🎬 [Mixamo](https://mixamo.com/)
+- 📦 [three-vrm](https://github.com/pixiv/three-vrm)
+- 🔗 [React Three Fiber](https://docs.pmndrs.com/react-three-fiber/)
+- 🤖 [LangChain](https://js.langchain.com/)
+
+---
+
+## 🧠 Technical Notes
+
+### Why VRM → FBX → Mixamo → GLB?
+
+**Problem:** VRM uses MToon shaders (not supported by Mixamo)
+
+**Solution:**
+1. VRM → FBX: Extract mesh + skeleton, lose materials
+2. Mixamo: Standardize skeleton, download animations
+3. `fix_materials_from_vrm.py`: Restore materials
+
+**Result:** ✅ Standard skeleton + Mixamo animations + Original materials
+
+### Why GLB not GLTF?
+
+| Format | Pros | Cons |
+|--------|------|------|
+| **GLB** | Binary, single file, fast deploy | Hard to edit |
+| **GLTF** | Easy to edit (JSON) | Multiple files, complex serve |
+
+→ **This project:** GLB (production)
+
+### Performance
+
+- Model size: 15-30 MB (compressed)
+- Animations: 7 tracks, 1 playing at a time
+- Target: 30/60 FPS on desktop
+
+**Optimization tips:**
+- Texture compression: WEBP/KTX
+- LOD (Level of Detail)
+- Lazy-load animations
+
+---
+
+## 📄 License
+
+MIT — Feel free to use for personal or commercial projects.
+
+---
+
+## 👨‍💻 Author
+
+**Nguyễn Thanh Hiếu** — [GitHub](https://github.com/thhieu2904)
+
